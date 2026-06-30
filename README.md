@@ -1,79 +1,93 @@
 # FlexViT: A Flexible FPGA-based Accelerator for Edge Vision Transformers
 
-FlexViT is a reconfigurable FPGA accelerator for Vision Transformer (ViT) inference on resource-constrained edge devices. Built using the SECDA-TFLite framework, FlexViT adopts a hardware-software co-design approach that maps both fully connected (FC) and convolutional (CONV) layers onto a unified high-throughput GEMM engine via a runtime im2col transformation. This design enables consistent end-to-end performance improvements across both standard and hybrid ViT architectures.
+This repository will contain the code for the FlexViT paper, accepted at [FPL 2026](https://2026.fpl.org)
 
-This repository provides the hardware bitstreams and the custom TensorFlow Lite (TFLite) delegate source code. It is designed to be integrated directly into the SECDA-TFLite build environment for evaluation on the AMD Zynq-7000 SoC (PYNQ-Z2).
+## Steps:
+### 1. Download SECDA-TFLite v2.
 
----
+'''bash
+git clone https://github.com/gicLAB/SECDA-TFLite.git && \
+cd SECDA-TFLite && \
+git submodule init && \
+git submodule update && \
+sudo apt install -y jq ssh rsync
+'''
 
-## Repository Structure
+### 2. Download the FlexViT Repo in the SECDA-TFLite v2 path.
 
-The codebase is organized as follows:
+Clone FlexViT inside the SECDA-TFLite checkout so the repository ends up at `<SECDA-TFLite>/FlexViT`.
 
-    FlexViT/                   
-    ├── bitstreams/   - Accelerator bitstreams                          
-    ├── extra_files/  - Configuration files for SECDA-TFLite                      
-    ├── models/       - Models used in the paper                   
-    ├── src/          - Source code                              
-    └── README.md
+'''bash
+cd <SECDA-TFLite-root> && \
+git clone https://github.com/HDymarkowski/FlexViT.git FlexViT && \
+cd FlexViT && \
+chmod +x flexvit_integration.sh patch_vscode.sh && \
+./flexvit_integration.sh
+'''
 
----
+### 3. Setup SECDA-TFLite v2.
 
-## Hardware & Software Requirements
+Now go to  [https://github.com/gicLAB/SECDA-TFLite.git](https://github.com/gicLAB/SECDA-TFLite.git) to complete the set up of SECDA-TFLite.
+- Start from "Configuring SECDA-TFLite"
+- Use the Dev Container Methods (2.A) of VSCode to set up the development environment.
+- Verify that you can run SECDA-TFLite v2 for vm/v5 accelerator, **simulation, hardware automation and secda_apps_evaluation_suite** for Pynq-Z2  board before integrating FlexViT
+- If you face any issues setting up SECDA-TFLite v2, please create an issue in the SECDA-TFLite repository.
 
-* Target Hardware: PYNQ-Z2 board (AMD Zynq-7000 SoC).
-* Operating System: PYNQ Linux (Ubuntu base).
-* Build System: Bazel.
-* Dependencies: SECDA-TFLite framework, TensorFlow Lite.
+### 4. FlexViT Integration Steps
 
----
+'''bash
+cd <SECDA-TFLite-root>/FlexViT && \
+./flexvit_integration.sh
+'''
 
-## Integration with SECDA-TFLite
+### 5. Hardware Generation
+- In 'FlexViT/src/hardware_automation/generated', we have included the related bitstream files for FlexViT.
+- To generate an FPGA bitstream outside ***outside of the Dev-Container*** please follow SECDA-TFLite [hardware_automation](https://github.com/gicLAB/SECDA-TFLite/tree/main/hardware_automation).
 
-Because FlexViT relies on SECDA-TFLite's hardware-software co-design methodology, this repository is intended to be built within the host framework rather than in isolation. The custom TFLite delegate located in 'src/v9' acts as an extension to the SECDA-TFLite runtime.
+### 6. Run on Simulation
 
-When invoked, the SECDA-TFLite framework delegates supported graph operations to our custom driver. The delegate intercepts fully connected (FC) and convolutional (CONV) operations from the INT8 quantized model. For CONV layers, it performs a runtime 'im2col' transformation on the CPU, linearizing them into standard GEMM operations. The host driver then analyzes the layer dimensions to dynamically select between Dense or Mobile execution modes before dispatching the payload to the FlexViT hardware.
+- Within the VSCODE 'run and debug' the user should be presented with two key applications per accelerator version:
+  - Benchmark Model : run a Model on an Accelerator to understand execution time layer by layer.
+  - Inference Diff : Verify the correctness of the accelerator on against CPU execution for a Model.
 
-**SETUP INSTRUCTIONS:**
+- Select either from the dropDown Menu and "Run" to simulate.
 
-**1. Base Setup:** Initialize and set up the base SECDA-TFLite repository by following the official installation instructions in the main SECDA-TFLite repository (https://github.com/gicLAB/SECDA-TFLite). Also, pull the code from this repo.
+### 7. Run on FPGA
 
-**2. Copy Files:** Create a folder named 'vit_delegate' inside 'SECDA-TFLite/src/secda_delegates' and copy the 'src/v9' folder from this repo into it.
+- These FPGA run commands are not part of the FlexViT repository.
+- After running `./flexvit_integration.sh` inside the SECDA-TFLite workspace, use SECDA-TFLite's own `src/secda_apps_evaluation_suite` flows and launch configurations to run the benchmark, image classification, and evaluation tasks on the board.
+- FlexViT only provides the delegate, hardware assets, and VS Code integration needed for those SECDA-TFLite tasks to pick up the VIT accelerator.
 
-**3. Configure Files:** In the folder '/extra_files', we provide configuration extensions to add to files in the SECDA-TFLite repository so that you can run the relevant experiments. If these files do not already exist, you can just copy the entire file in instead of extending a pre-existing file. The files are as follows:                     
-- launch.json - 'SECDA-TFLite/tensorflow/.vscode/launch.json'                     
-- task.json - 'SECDA-TFLite/tensorflow/.vscode/task.json'                  
-- vit_9_0.json - 'SECDA-TFLite/hardware_automation/configs/vit_9_0.json'             
+### FlexViT Folder Structure:
 
-**4. Run Experiments:** SECDA-TFLite allows you to run experiments two ways:
-  - In order to check correctness in software, you can run experiments in software using VS Code's *run and debug* system. This will tell you whether or not the accelerator design performs correctly in simulation.                 
-  - In order to check correctness in hardware, you must use SECDA-TFLite's 'hardware_automation' tool to deploy the bitstream and run the accelerated inference directly on your own FPGA. From here you can:
-    - Test correctness using *id_vit_delegate_9* - Test performance using *bm_vit_delegate_9* - Test power using a power meter connected to the board                            
-
----
+'''text
+|-- flexvit_integration.sh
+|-- patch_vscode.sh
+|-- README_Patch.md
+|-- ARTIFACT_EVALUATION.md
+|-- figures/
+|-- src/
+|   |-- data/
+|   |-- hardware_automation/
+|   |-- src/
+|   |-- tensorflow/
+'''
 
 ## Artifact Evaluation
 
-To reproduce the results presented in our FPL 2026 paper, reviewers should evaluate the provided INT8 quantized models using the deployed hardware bitstream.
+The paper-specific model list and reproduction notes are documented in [ARTIFACT_EVALUATION.md](ARTIFACT_EVALUATION.md). That file summarizes the provided INT8 models and the evaluation flow used for correctness, latency, energy, and resource reporting.
 
-**1. Provided Models:** We evaluate five representative Vision Transformer architectures. To ensure exact reproducibility of our quantization and dimensional variance, the pre-converted INT8 .tflite models are provided:
-- ViT-T (ImageNet-21k) [src](https://github.com/martinsbruveris/tensorflow-image-models)
-- DeiT-T (ImageNet-1k) [src](https://github.com/martinsbruveris/tensorflow-image-models)
-- Swin-T (ImageNet-1k) [src](https://github.com/martinsbruveris/tensorflow-image-models)
-- MobileViT-S (ImageNet-1k) [src](https://huggingface.co/timm/mobilevit_s.cvnets_in1k)
-- EfficientViT-b1 (ImageNet-1k) [src](https://huggingface.co/timm/efficientvit_b1.r224_in1k)
 
-**2. Functional Correctness:** Before benchmarking, verify that the hardware executes the model accurately. Run the model through the hardware using the id_vit_delegate_9 configuration. The inference outputs produced by the hardware accelerator must match the software execution outputs within TFLite's acceptable passing range (cosine similarity > 99%).
+## Cite:
 
-**3. Latency Evaluation:** To measure end-to-end and layer-specific speedups, run the models using the bm_vit_delegate_9 configuration.
-- CPU Baseline: Execute the inference strictly on the ARM Cortex-A9 CPU with NEON SIMD instructions enabled.
-- Hardware Accelerated: Execute using the FlexViT delegate and the VIT_9_0.bit bitstream clocked at 200MHz.
-- All latency metrics should be averaged over 100 inference runs to account for system variance.
-
-**4. Energy Evaluation:** Energy per inference (Joules) is measured externally using a Makerfocus USB power meter connected to the PYNQ-Z2 board.
-
-Important Note for CPU Baseline: To ensure a fair comparison and mitigate the static power overhead of the FPGA fabric during CPU-only execution, configure the FPGA with the minimal baseline bitstream (CPU_1_0.bit) rather than the full FlexViT bitstream.
-
-Record the power draw and multiply it by the measured latency (averaged over 100 runs) for both the CPU baseline and the CPU+Accelerator executions.
-
-**5. Resource Utilization:** The FPGA resource utilization (BRAM, DSP, FF, LUT) can be verified by inspecting the Vivado synthesis and implementation reports generated alongside the .bit files.
+```bibtex
+@inproceedings{dymarkowski2026flexvit,
+  author    = {Dymarkowski, Hubert and Fu, Xingjian and Saha, Rappy and Haris, Jude and Cano, Jose},
+  title     = {FlexViT: A Flexible FPGA-based Accelerator for Edge Vision Transformers},
+  booktitle = {36th International Conference on Field-Programmable Logic and Applications (FPL)},
+  year      = {2026},
+  month     = {September},
+  address   = {Ghent, Belgium},
+  note      = {Accepted for Publication}
+}
+```
