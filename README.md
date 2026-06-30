@@ -4,26 +4,24 @@ This repository will contain the code for the FlexViT paper, accepted at [FPL 20
 
 ## Steps:
 ### 1. Download SECDA-TFLite v2.
-
-'''bash
+```bash 
 git clone https://github.com/gicLAB/SECDA-TFLite.git && \
 cd SECDA-TFLite && \
 git submodule init && \
 git submodule update && \
 sudo apt install -y jq ssh rsync
-'''
+```
 
 ### 2. Download the FlexViT Repo in the SECDA-TFLite v2 path.
 
 Clone FlexViT inside the SECDA-TFLite checkout so the repository ends up at `<SECDA-TFLite>/FlexViT`.
-
-'''bash
+```bash
 cd <SECDA-TFLite-root> && \
 git clone https://github.com/HDymarkowski/FlexViT.git FlexViT && \
 cd FlexViT && \
 chmod +x flexvit_integration.sh patch_vscode.sh && \
 ./flexvit_integration.sh
-'''
+```
 
 ### 3. Setup SECDA-TFLite v2.
 
@@ -34,11 +32,10 @@ Now go to  [https://github.com/gicLAB/SECDA-TFLite.git](https://github.com/gicLA
 - If you face any issues setting up SECDA-TFLite v2, please create an issue in the SECDA-TFLite repository.
 
 ### 4. FlexViT Integration Steps
-
-'''bash
+```bash
 cd <SECDA-TFLite-root>/FlexViT && \
 ./flexvit_integration.sh
-'''
+```
 
 ### 5. Hardware Generation
 - In 'FlexViT/src/hardware_automation/generated', we have included the related bitstream files for FlexViT.
@@ -59,8 +56,7 @@ cd <SECDA-TFLite-root>/FlexViT && \
 - FlexViT only provides the delegate, hardware assets, and VS Code integration needed for those SECDA-TFLite tasks to pick up the VIT accelerator.
 
 ### FlexViT Folder Structure:
-
-'''text
+```text
 |-- flexvit_integration.sh
 |-- patch_vscode.sh
 |-- README_Patch.md
@@ -71,7 +67,7 @@ cd <SECDA-TFLite-root>/FlexViT && \
 |   |-- hardware_automation/
 |   |-- src/
 |   |-- tensorflow/
-'''
+```
 
 ## Artifact Evaluation
 
@@ -79,7 +75,6 @@ The paper-specific model list and reproduction notes are documented in [ARTIFACT
 
 
 ## Cite:
-
 ```bibtex
 @inproceedings{dymarkowski2026flexvit,
   author    = {Dymarkowski, Hubert and Fu, Xingjian and Saha, Rappy and Haris, Jude and Cano, Jose},
