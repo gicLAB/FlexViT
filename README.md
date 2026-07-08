@@ -1,6 +1,6 @@
 # FlexViT: A Flexible FPGA-based Accelerator for Edge Vision Transformers
 
-This repository will contain the code for the FlexViT paper, accepted at [FPL 2026](https://2026.fpl.org).
+This repository contians the code for the FlexViT paper, accepted at [FPL 2026](https://2026.fpl.org).
 
 ## Steps:
 ### 1. Download SECDA-TFLite v2.
