@@ -31,6 +31,3 @@ If you want to restore the previous VS Code state, copy the backup files back in
 cp <SECDA-TFLite>/tensorflow/.vscode/launch.json.backup <SECDA-TFLite>/tensorflow/.vscode/launch.json
 cp <SECDA-TFLite>/tensorflow/.vscode/tasks.json.backup <SECDA-TFLite>/tensorflow/.vscode/tasks.json
 ```
-
-## Notes
-- The FlexViT tree intentionally stays close to the PoTAcc integration style: one root integration command, one VS Code merge helper, and README instructions that point to the single entry point.
