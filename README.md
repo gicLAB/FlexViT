@@ -1,6 +1,6 @@
 # FlexViT: A Flexible FPGA-based Accelerator for Edge Vision Transformers
 
-This repository will contain the code for the FlexViT paper, accepted at [FPL 2026](https://2026.fpl.org)
+This repository will contain the code for the FlexViT paper, accepted at [FPL 2026](https://2026.fpl.org).
 
 ## Steps:
 ### 1. Download SECDA-TFLite v2.
@@ -48,7 +48,16 @@ cd <SECDA-TFLite-root>/FlexViT && \
 
 - Select either from the dropDown Menu and "Run" to simulate.
 
-- In order to change the model being ran, open *launch.json*, comment the current model line and uncomment the line for the model you want to run.
+- In order to change the model being run, open `src/tensorflow/launch.json` and edit the `--model_file` or `--graph` entry for the accelerator you are using.
+- Keep only one model line uncommented. For example, in the VITv9 launch configs you can switch between:
+  ```json
+  --model_file=${workspaceFolder}/../data/models/vit_tiny_patch16_224.tflite,
+  // --model_file=${workspaceFolder}/../data/models/deit_tiny_patch16_224.tflite,
+  // --model_file=${workspaceFolder}/../data/models/mobilevit_s_int8.tflite,
+  // --model_file=${workspaceFolder}/../data/models/efficientvit_int8.tflite,
+  // --model_file=${workspaceFolder}/../data/models/Swin-T_INT8.tflite,
+  ```
+- The same pattern applies to the benchmark launch config, where the model path is set with `--graph=` instead of `--model_file=`.
 
 ### 7. Run on FPGA
 
