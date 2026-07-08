@@ -17,10 +17,9 @@ sudo apt install -y jq ssh rsync
 Clone FlexViT inside the SECDA-TFLite checkout so the repository ends up at `<SECDA-TFLite>/FlexViT`.
 ```bash
 cd <SECDA-TFLite-root> && \
-git clone https://github.com/HDymarkowski/FlexViT.git FlexViT && \
+git clone https://github.com/gicLAB/FlexViT.git FlexViT && \
 cd FlexViT && \
-chmod +x flexvit_integration.sh patch_vscode.sh && \
-./flexvit_integration.sh
+chmod +x flexvit_integration.sh patch_vscode.sh
 ```
 
 ### 3. Setup SECDA-TFLite v2.

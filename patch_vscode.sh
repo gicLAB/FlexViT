@@ -26,12 +26,17 @@ if [[ -z "${secda_root}" ]]; then
   exit 1
 fi
 
-src_vscode="${script_dir}/src/tensorflow"
+src_vscode="${script_dir}/src/src/tensorflow"
 dst_vscode="${secda_root}/tensorflow/.vscode"
 
 if [[ ! -d "${src_vscode}" ]]; then
-  echo "error: missing source vscode folder: ${src_vscode}" >&2
-  exit 1
+    fallback_src_vscode="${script_dir}/src/tensorflow"
+    if [[ -d "${fallback_src_vscode}" ]]; then
+        src_vscode="${fallback_src_vscode}"
+    else
+        echo "error: missing source vscode folder: ${src_vscode}" >&2
+        exit 1
+    fi
 fi
 
 mkdir -p "${dst_vscode}"
@@ -85,6 +90,7 @@ def load_json_like(path, fragment_key):
 
     text = re.sub(r",\s*([}\]])", r"\1", "".join(stripped))
     text = text.strip()
+    text = re.sub(r",\s*$", "", text)
     if not text:
         return {"version": "0.2.0", fragment_key: []}
 
