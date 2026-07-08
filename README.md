@@ -42,6 +42,8 @@ cd <SECDA-TFLite-root>/FlexViT && \
 
 ### 6. Run on Simulation
 
+- Make sure you open the SECDA-TFLite workspace in VS Code first: `File -> Open Workspace from File -> SECDA-TFLite.code-workspace`. Otherwise, you will not see the appropriate options in "Run and Debug".
+
 - Within the VSCODE 'run and debug' the user should be presented with two key applications per accelerator version:
   - Benchmark Model : run a Model on an Accelerator to understand execution time layer by layer.
   - Inference Diff : Verify the correctness of the accelerator on against CPU execution for a Model.
@@ -49,6 +51,7 @@ cd <SECDA-TFLite-root>/FlexViT && \
 - Select either from the dropDown Menu and "Run" to simulate.
 
 - In order to change the model being run, open `src/tensorflow/launch.json` and edit the `--model_file` or `--graph` entry for the accelerator you are using.
+  
 - Keep only one model line uncommented. For example, in the VITv9 launch configs you can switch between:
   ```json
   --model_file=${workspaceFolder}/../data/models/vit_tiny_patch16_224.tflite,
