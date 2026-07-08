@@ -48,6 +48,8 @@ cd <SECDA-TFLite-root>/FlexViT && \
 
 - Select either from the dropDown Menu and "Run" to simulate.
 
+- In order to change the model being ran, open *launch.json*, comment the current model line and uncomment the line for the model you want to run.
+
 ### 7. Run on FPGA
 
 - These FPGA run commands are not part of the FlexViT repository.
